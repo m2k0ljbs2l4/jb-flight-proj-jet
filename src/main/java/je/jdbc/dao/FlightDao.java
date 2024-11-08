@@ -49,16 +49,24 @@ public class FlightDao implements Dao<Long, Flight> {
         return Flights;
     }
 
+    @Override
+    public Optional<Flight> findById(Long id) {
+        try (Connection connection = ConnectionManager.get()){
+            return findById(id, connection);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private static final String FIND_BY_ID_SQL = FIND_ALL_SQL +
 //            "SELECT * FROM flight";
             " WHERE id = ?";
 
 
-    @Override
-    public Optional<Flight> findById(Long id) {
+    public Optional<Flight> findById(Long id, Connection connection) {
         Flight flight = null;
-        try (Connection connection = ConnectionManager.get();
-             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
+        try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
             statement.setLong(1, id);
             ResultSet result = statement.executeQuery();
             while (result.next()) {

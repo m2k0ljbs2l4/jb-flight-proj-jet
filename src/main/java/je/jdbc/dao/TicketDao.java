@@ -93,7 +93,10 @@ public class TicketDao implements Dao<Long, Ticket> {
         return new Ticket(result.getLong("id"),
                 result.getString("passenger_no"),
                 result.getString("passenger_name"),
-                flightDao.findById(result.getLong("flight_id")).orElse(null),
+                flightDao.findById(
+                        result.getLong("flight_id"),
+                        result.getStatement().getConnection()
+                ).orElse(null),
                 result.getString("seat_no"),
                 result.getBigDecimal("cost")
         );
