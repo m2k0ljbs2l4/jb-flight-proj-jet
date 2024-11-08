@@ -1,6 +1,8 @@
 package je.jdbc.dao;
 
 import je.jdbc.dto.TicketFilter;
+import je.jdbc.entity.Flight;
+import je.jdbc.entity.FlightStatus;
 import je.jdbc.entity.Ticket;
 import je.jdbc.exception.DaoException;
 import je.jdbc.utils.ConnectionManager;
@@ -24,7 +26,7 @@ public class TicketDao implements Dao<Long, Ticket> {
              PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, ticket.getPassangerNo());
             statement.setString(2, ticket.getPassangerName());
-            statement.setLong(3, ticket.getFlightId());
+            statement.setLong(3, ticket.getFlight().getId());
             statement.setString(4, ticket.getSeatNo());
             statement.setBigDecimal(5, ticket.getCost());
 
@@ -55,7 +57,10 @@ public class TicketDao implements Dao<Long, Ticket> {
 
     private static final String FIND_ALL_SQL =
 //            "SELECT * FROM ticket";
-            "SELECT id, passenger_no, passenger_name, flight_id, seat_no, cost FROM ticket";
+            "SELECT t.id, t.passenger_no, t.passenger_name, t.flight_id, t.seat_no, t.cost " +
+            "f.flight_no, f.departure_date, f.departure_airport_code, f.arrival_date, f.arrival_airport_code, f.aircraft_id, f.status " +
+            "FROM ticket t " +
+            "JOIN flight f ON t.flight_id = f.id";
 
     public List<Ticket> findAll() {
         List<Ticket> tickets = new ArrayList<>();
@@ -74,10 +79,20 @@ public class TicketDao implements Dao<Long, Ticket> {
     }
 
     private static Ticket buildTicket(ResultSet result) throws SQLException {
+        Flight flight = new Flight(
+                result.getLong("flight_id"),
+                result.getString("flight_no"),
+                result.getTimestamp("departure_date").toLocalDateTime(),
+                result.getString("departure_airport_code"),
+                result.getTimestamp("arrival_date").toLocalDateTime(),
+                result.getString("arrival_airport_code"),
+                result.getInt("aircraft_id"),
+                FlightStatus.valueOf(result.getString("status"))
+        );
         return new Ticket(result.getLong("id"),
                 result.getString("passenger_no"),
                 result.getString("passenger_name"),
-                result.getLong("flight_id"),
+                flight,
                 result.getString("seat_no"),
                 result.getBigDecimal("cost")
         );
@@ -117,7 +132,7 @@ public class TicketDao implements Dao<Long, Ticket> {
              PreparedStatement statement = connection.prepareStatement(UPDATE_SQL)) {
             statement.setString(1, ticket.getPassangerNo());
             statement.setString(2, ticket.getPassangerName());
-            statement.setLong(3, ticket.getFlightId());
+            statement.setLong(3, ticket.getFlight().getId());
             statement.setString(4, ticket.getSeatNo());
             statement.setBigDecimal(5, ticket.getCost());
             statement.setLong(6, ticket.getId());
