@@ -138,24 +138,25 @@ public class TicketDao {
         }
         if (ticketFilter.seatNo() != null) {
             parameters.add("%" + ticketFilter.seatNo() + "%");
-            whereSql.add("seat_no like = ?");
+            whereSql.add("seat_no like ?");
         }
         parameters.add(ticketFilter.limit());
         parameters.add(ticketFilter.offset());
-        whereSql.stream().collect(Collectors.joining(
+        String where = whereSql.stream().collect(Collectors.joining(
                 " AND ",
-                " WHERE ",
+                parameters.size() > 2 ? " WHERE " : " ",
                 " LIMIT ? OFFSET ? "
-                ));
+        ));
 
-
+        String sql = FIND_ALL_SQL + where;
         List<Ticket> tickets = new ArrayList<>();
 
         try (Connection connection = ConnectionManager.get();
-             PreparedStatement statement = connection.prepareStatement(FIND_ALL_SQL)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             for (int i = 0; i < parameters.size(); i++) {
                 statement.setObject(i + 1, parameters.get(i));
             }
+            System.out.println(statement);
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 tickets.add(
@@ -167,6 +168,7 @@ public class TicketDao {
         }
         return tickets;
     }
+
 
 
     public static TicketDao getInstance() {
