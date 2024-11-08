@@ -3,8 +3,11 @@ package je.jdbc;
 import je.jdbc.utils.ConnectionManager;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JdbcRunner {
 
@@ -33,13 +36,38 @@ public class JdbcRunner {
 //        """;
 
         String sql = """
-        DELETE FROM info;
-        """;
+            SELECT * FROM ticket;
+            """;
 
         try (Connection connection = ConnectionManager.open();
-             Statement statement = connection.createStatement()) {
-            System.out.println(statement.execute(sql));
+            Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString("passenger_name"));
+                System.out.println(resultSet.getLong("id"));
+            }
         }
+
+        System.out.println(getTicketsByFlightId(8L));
+    }
+
+    public static List<Long> getTicketsByFlightId(Long flightId) {
+        List<Long> tickets = new ArrayList<>();
+        String sql = """
+            SELECT * FROM ticket
+            WHERE flight_id = %s;
+            """.formatted(flightId);
+        try (Connection connection = ConnectionManager.open();
+             Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                tickets.add(resultSet.getLong("id"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return tickets;
     }
 
 }
