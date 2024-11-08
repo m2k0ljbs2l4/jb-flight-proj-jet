@@ -9,6 +9,8 @@ public class JdbcRunner {
 
     public static void main(String[] args) throws SQLException {
 
+
+
         try (Connection connection = ConnectionManager.open()) {
             System.out.println(connection.getTransactionIsolation());;
         }
