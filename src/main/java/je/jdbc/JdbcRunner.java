@@ -83,7 +83,9 @@ public class JdbcRunner {
                 """;
         try (Connection connection = ConnectionManager.open();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-
+            statement.setFetchSize(2);
+            statement.setMaxRows(2);
+            statement.setQueryTimeout(1);
             statement.setLong(1, flightId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
