@@ -17,7 +17,7 @@ public class JdbcRunnerDao {
         ticket.setSeatNo("5B");
         ticket.setCost(BigDecimal.TEN);
 
-        System.out.println(ticketDao.save(ticket));
+//        System.out.println(ticketDao.save(ticket));
         System.out.println(ticketDao.delete(56L));
 
     }
