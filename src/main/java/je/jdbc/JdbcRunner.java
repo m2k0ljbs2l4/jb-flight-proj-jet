@@ -50,8 +50,8 @@ public class JdbcRunner {
         System.out.println(getTicketsByFlightId(8L));
         System.out.println(getTicketsByFlightIdPrepare(8L));
 
-        System.out.println(getFlightsBetween(LocalDate.of(2020, 04, 01).atStartOfDay(),
-                LocalDate.of(2020, 8, 01).atStartOfDay()));
+        System.out.println(getFlightsBetween(LocalDate.of(2020, 4, 1).atStartOfDay(),
+                LocalDate.of(2020, 8, 1).atStartOfDay()));
 
         checkMetaData();
     }
@@ -100,7 +100,7 @@ public class JdbcRunner {
 
 
     public static List<Long> getFlightsBetween(LocalDateTime start, LocalDateTime end) {
-        List<Long> flights = new ArrayList<Long>();
+        List<Long> flights = new ArrayList<>();
         String sql = """
                 SELECT * FROM flight 
                 WHERE departure_date 
@@ -116,7 +116,7 @@ public class JdbcRunner {
                 flights.add(result.getLong("id"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return flights;
     }
