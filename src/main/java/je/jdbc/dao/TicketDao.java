@@ -1,5 +1,6 @@
 package je.jdbc.dao;
 
+import je.jdbc.dto.TicketFilter;
 import je.jdbc.entity.Ticket;
 import je.jdbc.exception.DaoException;
 import je.jdbc.utils.ConnectionManager;
@@ -8,6 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TicketDao {
     private final static TicketDao INSTANCE = new TicketDao();
@@ -125,6 +127,47 @@ public class TicketDao {
             throw new DaoException(e);
         }
     }
+
+
+    public List<Ticket> findAll(TicketFilter ticketFilter) {
+        List<Object> parameters = new ArrayList<>();
+        List<String> whereSql = new ArrayList<>();
+        if (ticketFilter.passengerName() != null) {
+            parameters.add(ticketFilter.passengerName());
+            whereSql.add("passenger_name = ?");
+        }
+        if (ticketFilter.seatNo() != null) {
+            parameters.add("%" + ticketFilter.seatNo() + "%");
+            whereSql.add("seat_no like = ?");
+        }
+        parameters.add(ticketFilter.limit());
+        parameters.add(ticketFilter.offset());
+        whereSql.stream().collect(Collectors.joining(
+                " AND ",
+                " WHERE ",
+                " LIMIT ? OFFSET ? "
+                ));
+
+
+        List<Ticket> tickets = new ArrayList<>();
+
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement statement = connection.prepareStatement(FIND_ALL_SQL)) {
+            for (int i = 0; i < parameters.size(); i++) {
+                statement.setObject(i + 1, parameters.get(i));
+            }
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                tickets.add(
+                        buildTicket(result)
+                );
+            }
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+        return tickets;
+    }
+
 
     public static TicketDao getInstance() {
         return INSTANCE;
