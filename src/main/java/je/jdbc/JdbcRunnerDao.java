@@ -19,6 +19,12 @@ public class JdbcRunnerDao {
 //
 ////        System.out.println(ticketDao.save(ticket));
 //        System.out.println(ticketDao.delete(56L));
-        System.out.println(ticketDao.findAll());
+//        System.out.println(ticketDao.findAll());
+//        System.out.println(ticketDao.findById(5L).get());
+        Ticket ticket = ticketDao.findById(5L).get();
+        System.out.println(ticket);
+        ticket.setSeatNo("40D");
+        System.out.println(ticketDao.update(ticket));
+        System.out.println(ticket);
     }
 }
