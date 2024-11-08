@@ -102,7 +102,7 @@ public class JdbcRunner {
     public static List<Long> getFlightsBetween(LocalDateTime start, LocalDateTime end) {
         List<Long> flights = new ArrayList<>();
         String sql = """
-                SELECT * FROM flight 
+                SELECT * FROM flight
                 WHERE departure_date 
                 BETWEEN ? AND ?
                 """;
