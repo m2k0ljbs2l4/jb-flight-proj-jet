@@ -3,6 +3,7 @@ package je.jdbc.dao;
 import je.jdbc.entity.Flight;
 import je.jdbc.entity.Flight;
 import je.jdbc.entity.FlightStatus;
+import je.jdbc.entity.Ticket;
 import je.jdbc.exception.DaoException;
 import je.jdbc.utils.ConnectionManager;
 
@@ -48,9 +49,25 @@ public class FlightDao implements Dao<Long, Flight> {
         return Flights;
     }
 
+    private static final String FIND_BY_ID_SQL = FIND_ALL_SQL +
+//            "SELECT * FROM flight";
+            " WHERE id = ?";
+
+
     @Override
     public Optional<Flight> findById(Long id) {
-        return Optional.empty();
+        Flight flight = null;
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
+            statement.setLong(1, id);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                flight = buildFlight(result);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.ofNullable(flight);
     }
 
     @Override

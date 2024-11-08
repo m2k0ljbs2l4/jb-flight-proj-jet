@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 public class TicketDao implements Dao<Long, Ticket> {
     private final static TicketDao INSTANCE = new TicketDao();
+    private static final FlightDao flightDao = FlightDao.getInstance();
 
     private final static String SAVE_SQL =
             "INSERT INTO ticket" +
@@ -79,20 +80,20 @@ public class TicketDao implements Dao<Long, Ticket> {
     }
 
     private static Ticket buildTicket(ResultSet result) throws SQLException {
-        Flight flight = new Flight(
-                result.getLong("flight_id"),
-                result.getString("flight_no"),
-                result.getTimestamp("departure_date").toLocalDateTime(),
-                result.getString("departure_airport_code"),
-                result.getTimestamp("arrival_date").toLocalDateTime(),
-                result.getString("arrival_airport_code"),
-                result.getInt("aircraft_id"),
-                FlightStatus.valueOf(result.getString("status"))
-        );
+//        Flight flight = new Flight(
+//                result.getLong("flight_id"),
+//                result.getString("flight_no"),
+//                result.getTimestamp("departure_date").toLocalDateTime(),
+//                result.getString("departure_airport_code"),
+//                result.getTimestamp("arrival_date").toLocalDateTime(),
+//                result.getString("arrival_airport_code"),
+//                result.getInt("aircraft_id"),
+//                FlightStatus.valueOf(result.getString("status"))
+//        );
         return new Ticket(result.getLong("id"),
                 result.getString("passenger_no"),
                 result.getString("passenger_name"),
-                flight,
+                flightDao.findById(result.getLong("flight_id")).orElse(null),
                 result.getString("seat_no"),
                 result.getBigDecimal("cost")
         );
