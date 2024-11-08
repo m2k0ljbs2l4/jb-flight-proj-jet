@@ -5,6 +5,8 @@ import je.jdbc.exception.DaoException;
 import je.jdbc.utils.ConnectionManager;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TicketDao {
     private final static TicketDao INSTANCE = new TicketDao();
@@ -47,6 +49,33 @@ public class TicketDao {
             throw new DaoException(e);
         }
     }
+
+    private static final String FIND_ALL_SQL =
+//            "SELECT * FROM ticket";
+            "SELECT id, passenger_no, passenger_name, flight_id, seat_no, cost FROM ticket";
+
+    public List<Ticket> findAll() {
+        List<Ticket> tickets = new ArrayList<>();
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement statement = connection.prepareStatement(FIND_ALL_SQL)) {
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                tickets.add(
+                        new Ticket(result.getLong("id"),
+                                result.getString("passenger_no"),
+                                result.getString("passenger_name"),
+                                result.getLong("flight_id"),
+                                result.getString("seat_no"),
+                                result.getBigDecimal("cost")
+                        )
+                );
+            }
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+        return tickets;
+    }
+
 
     public static TicketDao getInstance() {
         return INSTANCE;
