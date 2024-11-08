@@ -2,10 +2,9 @@ package je.jdbc;
 
 import je.jdbc.utils.ConnectionManager;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +35,11 @@ public class JdbcRunner {
 //        """;
 
         String sql = """
-            SELECT * FROM ticket;
-            """;
+                SELECT * FROM ticket;
+                """;
 
         try (Connection connection = ConnectionManager.open();
-            Statement statement = connection.createStatement()) {
+             Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 System.out.println(resultSet.getString("passenger_name"));
@@ -49,14 +48,20 @@ public class JdbcRunner {
         }
 
         System.out.println(getTicketsByFlightId(8L));
+        System.out.println(getTicketsByFlightIdPrepare(8L));
+
+        System.out.println(getFlightsBetween(LocalDate.of(2020, 04, 01).atStartOfDay(),
+                LocalDate.of(2020, 8, 01).atStartOfDay()));
+
+        checkMetaData();
     }
 
     public static List<Long> getTicketsByFlightId(Long flightId) {
         List<Long> tickets = new ArrayList<>();
         String sql = """
-            SELECT * FROM ticket
-            WHERE flight_id = %s;
-            """.formatted(flightId);
+                SELECT * FROM ticket
+                WHERE flight_id = %s;
+                """.formatted(flightId);
         try (Connection connection = ConnectionManager.open();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
@@ -68,6 +73,60 @@ public class JdbcRunner {
         }
 
         return tickets;
+    }
+
+    public static List<Long> getTicketsByFlightIdPrepare(Long flightId) {
+        List<Long> tickets = new ArrayList<>();
+        String sql = """
+                SELECT * FROM ticket
+                WHERE flight_id = ?;
+                """;
+        try (Connection connection = ConnectionManager.open();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, flightId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                tickets.add(resultSet.getLong("id"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return tickets;
+    }
+
+
+    public static List<Long> getFlightsBetween(LocalDateTime start, LocalDateTime end) {
+        List<Long> flights = new ArrayList<Long>();
+        String sql = """
+                SELECT * FROM flight 
+                WHERE departure_date 
+                BETWEEN ? AND ?
+                """;
+        try (Connection connection = ConnectionManager.open();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setTimestamp(1, Timestamp.valueOf(start));
+            statement.setTimestamp(2, Timestamp.valueOf(end));
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                flights.add(result.getLong("id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return flights;
+    }
+
+    public static void checkMetaData() throws SQLException {
+        try (Connection connection = ConnectionManager.open()) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            ResultSet tables = databaseMetaData.getCatalogs();
+            while (tables.next()) {
+                System.out.println(tables.getString(1));
+            }
+        }
     }
 
 }
