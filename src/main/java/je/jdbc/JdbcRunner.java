@@ -38,7 +38,7 @@ public class JdbcRunner {
                 SELECT * FROM ticket;
                 """;
 
-        try (Connection connection = ConnectionManager.open();
+        try (Connection connection = ConnectionManager.get();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
@@ -62,7 +62,7 @@ public class JdbcRunner {
                 SELECT * FROM ticket
                 WHERE flight_id = %s;
                 """.formatted(flightId);
-        try (Connection connection = ConnectionManager.open();
+        try (Connection connection = ConnectionManager.get();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
@@ -81,7 +81,7 @@ public class JdbcRunner {
                 SELECT * FROM ticket
                 WHERE flight_id = ?;
                 """;
-        try (Connection connection = ConnectionManager.open();
+        try (Connection connection = ConnectionManager.get();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setFetchSize(2);
             statement.setMaxRows(2);
@@ -106,7 +106,7 @@ public class JdbcRunner {
                 WHERE departure_date 
                 BETWEEN ? AND ?
                 """;
-        try (Connection connection = ConnectionManager.open();
+        try (Connection connection = ConnectionManager.get();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setTimestamp(1, Timestamp.valueOf(start));
@@ -122,7 +122,7 @@ public class JdbcRunner {
     }
 
     public static void checkMetaData() throws SQLException {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.get()) {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             ResultSet tables = databaseMetaData.getCatalogs();
             while (tables.next()) {
