@@ -8,11 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import je.jdbc.utils.JspHelper;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/registration")
 public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setAttribute("roles", List.of("ADMIN", "USER"));
+        req.setAttribute("genders", List.of("MALE", "FEMALE"));
         req.getRequestDispatcher(JspHelper.getPath("registration")).forward(req, resp);
 
 
