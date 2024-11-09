@@ -8,7 +8,7 @@ import lombok.*;
 //@NoArgsConstructor(access = AccessLevel.PRIVATE)
 //@AllArgsConstructor
 @Data
-@AllArgsConstructor
+@Builder
 public class UserDto {
     private Long id;
     private String email;

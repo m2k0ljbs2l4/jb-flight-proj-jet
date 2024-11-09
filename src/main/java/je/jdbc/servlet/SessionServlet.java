@@ -18,8 +18,15 @@ public class SessionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        UserDto user = new UserDto();
-        session.setAttribute(USER, );
+        Object user = session.getAttribute(USER);
+        if (user == null) {
+            user = UserDto.builder()
+                    .id(5L)
+                    .email("aaa@aaa.com")
+                    .build();
+        }
+
+        session.setAttribute(USER, user);
         System.out.println(session.isNew());
     }
 }
