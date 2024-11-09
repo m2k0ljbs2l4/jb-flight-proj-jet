@@ -1,5 +1,8 @@
 <%@ page import="je.jdbc.service.TicketService" %>
 <%@ page import="je.jdbc.dto.TicketDto" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
     <title>Title</title>
