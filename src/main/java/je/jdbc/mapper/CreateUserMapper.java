@@ -4,8 +4,17 @@ import je.jdbc.dto.CreateUserDto;
 import je.jdbc.entity.Gender;
 import je.jdbc.entity.Role;
 import je.jdbc.entity.User;
+import je.jdbc.utils.LocalDateFormatter;
+import lombok.NoArgsConstructor;
 
-public class CreateUserMapper implements Mapper<User, CreateUserDto {
+@NoArgsConstructor
+public class CreateUserMapper implements Mapper<User, CreateUserDto> {
+    private static final CreateUserMapper INSTANCE = new CreateUserMapper();
+
+    public static CreateUserMapper getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public User mapFrom(CreateUserDto createUserDto) {
         return User.builder()
