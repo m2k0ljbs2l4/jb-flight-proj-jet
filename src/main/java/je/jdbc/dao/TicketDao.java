@@ -58,7 +58,7 @@ public class TicketDao implements Dao<Long, Ticket> {
 
     private static final String FIND_ALL_SQL =
 //            "SELECT * FROM ticket";
-            "SELECT t.id, t.passenger_no, t.passenger_name, t.flight_id, t.seat_no, t.cost " +
+            "SELECT t.id, t.passenger_no, t.passenger_name, t.flight_id, t.seat_no, t.cost, " +
             "f.flight_no, f.departure_date, f.departure_airport_code, f.arrival_date, f.arrival_airport_code, f.aircraft_id, f.status " +
             "FROM ticket t " +
             "JOIN flight f ON t.flight_id = f.id";
@@ -188,7 +188,26 @@ public class TicketDao implements Dao<Long, Ticket> {
         return tickets;
     }
 
+    private static String FIND_BY_FLIGHT_ID = FIND_ALL_SQL +
+            """
+             WHERE t.flight_id = ? 
+            """;
 
+    public List<Ticket> findAllByFlightId(Long id) {
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_FLIGHT_ID)) {
+            List<Ticket> tickets = new ArrayList<>();
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                tickets.add(buildTicket(resultSet));
+            }
+            return tickets;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static TicketDao getInstance() {
         return INSTANCE;
