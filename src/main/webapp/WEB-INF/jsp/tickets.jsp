@@ -3,12 +3,14 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page isELIgnored="false" %>
 <html>
 <head>
     <title>Title</title>
 </head>
 
 <body>
+<%@include file="header.jsp"%>
 <h1>Купленные билеты</h1>
 <ul>
     <%

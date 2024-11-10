@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: Raccoon
@@ -13,7 +13,7 @@
     <title>Title</title>
 </head>
 <body>
-<form action="${pageContext .request .contextPath}/login" method="post">
+<form action="${pageContext.request.contextPath}/login" method="post">
     <label for="email">Email:
         <input type="text" name="email" id="email" value="${param.email}" required>
     </label><br>
@@ -29,5 +29,6 @@
             <span>Email or password is not correct</span>
         </div>
     </c:if>
+</form>
 </body>
 </html>

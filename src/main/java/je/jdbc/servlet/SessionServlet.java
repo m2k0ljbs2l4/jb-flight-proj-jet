@@ -21,7 +21,7 @@ public class SessionServlet extends HttpServlet {
         Object user = session.getAttribute(USER);
         if (user == null) {
             user = UserDto.builder()
-                    .id(5L)
+                    .id(5)
                     .email("aaa@aaa.com")
                     .build();
         }
