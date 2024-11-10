@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page isELIgnored="false" %>
 <%--
   Created by IntelliJ IDEA.
   User: Raccoon
@@ -40,5 +41,15 @@
     </c:forEach>
     <input type="submit" value="Send">
 </form>
+<c:if test="${not empty requestScope.errors}">
+    <div style="color: red">
+        <c:forEach var="errors" items="${requestScope.errors}">
+            <span>${error.message}</span>
+            <br>
+        </c:forEach>
+    </div>
+</c:if>
+
+
 </body>
 </html>

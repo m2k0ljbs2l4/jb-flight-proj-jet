@@ -4,7 +4,7 @@ import je.jdbc.entity.User;
 import je.jdbc.utils.ConnectionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
+//import lombok.SneakyThrows;
 
 import java.sql.*;
 import java.util.List;
@@ -17,7 +17,7 @@ public class UserDao implements Dao<Long, User> {
 
     private static final UserDao INSTANCE = new UserDao();
     private static final String SAVE_SQL =
-            "INSERT INTO users (name, birthday, email, password, role, gender) VALUES (?,?,?,?,?,?,?,?)";
+            "INSERT INTO flight_repository.public.users (name, birthday, email, password, role, gender) VALUES (?,?,?,?,?,?,?)";
 
     public static UserDao getInstance() {
         return INSTANCE;
@@ -39,7 +39,7 @@ public class UserDao implements Dao<Long, User> {
     }
 
     @Override
-    @SneakyThrows
+//    @SneakyThrows
     public User save(User user) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement ps = connection.prepareStatement(SAVE_SQL, RETURN_GENERATED_KEYS)) {
@@ -56,6 +56,8 @@ public class UserDao implements Dao<Long, User> {
             user.setId(generatedKeys.getObject("id", Integer.class));
 
             return user;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -64,5 +66,4 @@ public class UserDao implements Dao<Long, User> {
     public boolean delete(Long id) {
         return false;
     }
-
 }

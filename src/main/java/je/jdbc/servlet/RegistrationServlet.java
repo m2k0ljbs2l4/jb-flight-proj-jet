@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import je.jdbc.dto.CreateUserDto;
+import je.jdbc.exception.ValidationException;
+import je.jdbc.service.UserService;
 import je.jdbc.utils.JspHelper;
 
 import java.io.IOException;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @WebServlet("/registration")
 public class RegistrationServlet extends HttpServlet {
+    private final UserService userService = UserService.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("roles", List.of("ADMIN", "USER"));
@@ -33,5 +37,14 @@ public class RegistrationServlet extends HttpServlet {
                 .role(req.getParameter("role"))
                 .gender(req.getParameter("gender"))
                 .build();
+
+        try {
+            userService.create(userDto);
+            resp.sendRedirect(JspHelper.getPath("/login"));
+        } catch (ValidationException e) {
+            req.setAttribute("errors", e.getErrors());
+            doGet(req, resp);
+        }
     }
+
 }
