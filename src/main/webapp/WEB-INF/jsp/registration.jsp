@@ -26,13 +26,14 @@
     <label for="pwd">Password:
         <input type="password" name="pwd" id="pwd">
     </label><br/>
-<%--        <select name="role" id="role">--%>
+        <select name="role" id="role">
 <%--            <option label="USER">USER</option>--%>
 <%--            <option label="ADMIN">ADMIN</option>--%>
-<%--        </select>--%>
-    <c:forEach var="role" items="${requestScope.roles}">
-        <option label="${role}">${role}</option><br>
-    </c:forEach>
+            <c:forEach var="role" items="${requestScope.roles}">
+                <option label="${role}">${role}</option><br>
+            </c:forEach>
+        </select>
+
     <br/>
     <c:forEach var="gender" items="${requestScope.genders}">
         <input type="radio" name="gender" VALUE="${gender}">

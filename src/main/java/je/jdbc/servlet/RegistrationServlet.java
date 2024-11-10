@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import je.jdbc.dto.CreateUserDto;
+import je.jdbc.entity.Gender;
+import je.jdbc.entity.Role;
 import je.jdbc.exception.ValidationException;
 import je.jdbc.service.UserService;
 import je.jdbc.utils.JspHelper;
@@ -19,8 +21,8 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("roles", List.of("ADMIN", "USER"));
-        req.setAttribute("genders", List.of("MALE", "FEMALE"));
+        req.setAttribute("roles", Role.values());
+        req.setAttribute("genders", Gender.values());
         req.getRequestDispatcher(JspHelper.getPath("registration")).forward(req, resp);
 
 
@@ -33,7 +35,7 @@ public class RegistrationServlet extends HttpServlet {
                 .name(req.getParameter("name"))
                 .birthday(req.getParameter("birthday"))
                 .email(req.getParameter("email"))
-                .password(req.getParameter("password"))
+                .password(req.getParameter("pwd"))
                 .role(req.getParameter("role"))
                 .gender(req.getParameter("gender"))
                 .build();
